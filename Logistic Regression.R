@@ -48,6 +48,7 @@ data[is.na(data$ca) | is.na(data$thal),]
 
 nrow(data)
 
+# remove rows with missing data from the dataset
 data <- data[!(is.na(data$ca) | is.na(data$thal)),]
 nrow(data)
 
@@ -56,6 +57,12 @@ xtabs(~ num + cp, data = data)
 xtabs(~ num + fbs, data = data)
 
 xtabs(~ num + restecg, data = data)
+##            restecg
+## num          0  1  2
+##   Healthy   92  1 67
+##   Unhealthy 55  3 79
+# Only 4 patients represent level 1
+# This could get in the way of finding the best fitted line
 
 xtabs(~ num + exang, data = data)
 xtabs(~ num + slope, data = data)
@@ -65,6 +72,25 @@ xtabs(~ num + thal, data = data)
 # binomial: Logistic Regression
 logistic <- glm(num ~ sex, data = data, family = "binomial")
 summary(logistic)
+
+## Coefficients:
+##             Estimate Std. Error z value Pr(>|z|)
+## (Intercept)  -1.0438     0.2326  -4.488 7.18e-06 ***
+## sexM          1.2737     0.2725   4.674 2.95e-06 ***
+# correspond to the following model:
+# log(odds) of having hd = -1.0438 + 1.2737 * the patient is male
+# sexM = 0 when the patient is female, = 1 when the patient is male
+# Std. Error and z value shows how the Wald's test was computed for both coeff.
+# Both p-values < 0.05, they're both statistically significant.
+# But a small p-value alone isn't interesting enough,
+# we also want large effect sizes,
+# and that's what the log(odds) and log(odds ratio) tells us.
+## Eg: hd = -1.0438 + 1.2737
+# The second term indicated the INCREASE in the log(odds)
+# that a male has of having heart disease.
+# It's the log(odds ratio) of the odds that a male will have heart disease
+# over the odds that a female will have heart diseases
+
 
 ## (Dispersion parameter for binomial family taken to be 1)
 # When we do "normal" linear regression,
@@ -134,8 +160,9 @@ predicted.data <- predicted.data[
 # add a new col to the data.frame that has the rank of each sample
 predicted.data$rank <- 1:nrow(predicted.data)
 
-# load the ggplot2 lib to draw a graph
+# install ggplot2 lib once for the first time
 install.packages("ggplot2")
+# load the ggplot2 lib to draw a graph (for every session)
 library(ggplot2)
 # so that ggplot has nice looking defaults
 install.packages("cowplot")
