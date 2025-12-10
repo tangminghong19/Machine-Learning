@@ -64,7 +64,7 @@ model
 
 # To see if 500 trees are enough for optimal classification, plot the error rates:
 oob.error.data <- data.frame(
-  Trees = rep(1:nrow(model$err.rate), times = 3),
+  Trees = rep(seq_len(nrow(model$err.rate)), times = 3),
   Type = rep(c("OOB", "Healthy", "Unhealthy"), each = nrow(model$err.rate)),
   Error = c(model$err.rate[,"OOB"],
     model$err.rate[,"Healthy"],
@@ -79,7 +79,7 @@ model
 # By OOB estimate of error rate and confusion matrix, 
 # we didn't do a better job classifying patients.
 oob.error.data <- data.frame(
-  Trees = rep(1:nrow(model$err.rate), times = 3),
+  Trees = rep(seq_len(nrow(model$err.rate)), times = 3),
   Type = rep(c("OOB", "Healthy", "Unhealthy"), each = nrow(model$err.rate)),
   Error = c(model$err.rate[,"OOB"],
     model$err.rate[,"Healthy"],
@@ -97,10 +97,15 @@ for (i in 1:10) {
   # last row, first col, ie the OOB error rate when all 1000 trees have been made
 }
 oob.values
+min(oob.values)
+which(oob.values == min(oob.values))
+
+model <- randomForest(hd ~., data = data.imputed, ntree = 500, proximity = TRUE, mtry = which(oob.values == min(oob.values)))
+model
 
 # Lastly, use the random forest to draw an MDS plot with samples 
 # to show how they related to each other.
-distance.matrix <- dist(1 - model$proximity)
+distance.matrix <- as.dist(1 - model$proximity)
 mds.stuff <- cmdscale(distance.matrix, eig = TRUE, x.ret = TRUE)
 # calculate the percentage of variation in the distance matrix that the X and Y axes account for
 mds.var.per <- round(mds.stuff$eig / sum(mds.stuff$eig) * 100, 1)
@@ -115,3 +120,4 @@ ggplot(data = mds.data, aes(x = X, y = Y, label = Sample)) +
   xlab(paste("MDS1 - ", mds.var.per[1], "%", sep = "")) +
   ylab(paste("MDS2 - ", mds.var.per[2], "%", sep = "")) +
   ggtitle("MDS plot using (1 - Random Forest Proximities)")
+ggsave(file = "random_forest_mds_plot.pdf")
