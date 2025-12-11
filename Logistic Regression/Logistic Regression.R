@@ -22,8 +22,8 @@ str(data)
 
 data[data == "?"] <- NA
 
-data[data$sex == 0,]$sex <- "F"
-data[data$sex == 1,]$sex <- "M"
+data[data$sex == 0, ]$sex <- "F"
+data[data$sex == 1, ]$sex <- "M"
 data$sex <- as.factor(data$sex)
 
 data$cp <- as.factor(data$cp)
@@ -43,13 +43,13 @@ data$num <- as.factor(data$num)
 
 str(data)
 
-nrow(data[is.na(data$ca) | is.na(data$thal),])
-data[is.na(data$ca) | is.na(data$thal),]
+nrow(data[is.na(data$ca) | is.na(data$thal), ])
+data[is.na(data$ca) | is.na(data$thal), ]
 
 nrow(data)
 
 # remove rows with missing data from the dataset
-data <- data[!(is.na(data$ca) | is.na(data$thal)),]
+data <- data[!(is.na(data$ca) | is.na(data$thal)), ]
 nrow(data)
 
 xtabs(~ num + sex, data = data)

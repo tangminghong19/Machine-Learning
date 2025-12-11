@@ -44,7 +44,7 @@ str(data)
 
 # set the seed for the random number generator
 set.seed(42)
-data.imputed <- rfImpute(hd ~ ., data = data, iter = 6) 
+data.imputed <- rfImpute(hd ~ ., data = data, iter = 20) 
 # iter is where we specify how many random forests rfImpute() should build
 # After each iteration, rfImpute() prints out the Out-of-Bag(OOB) error rate
 # Now, build a proper random forest
