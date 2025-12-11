@@ -65,3 +65,12 @@ plt.ylabel('PC2 - {0}%'.format(per_var[1]))
 for sample in pca_df.index:
     plt.annotate(sample, (pca_df.PC1.loc[sample], pca_df.PC2.loc[sample]))
 plt.show()
+
+# look at the loading scores for PC1 to determine which genes had the largest influence
+# on separating the two clusters along the x-axis
+loading_scores = pd.Series(pca.components_[0], index=genes)
+sorted_loading_scores = loading_scores.abs().sort_values(ascending=False)
+
+top_10_genes = sorted_loading_scores[0:10].index.values
+
+print(loading_scores[top_10_genes])
